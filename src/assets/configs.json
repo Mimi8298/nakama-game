@@ -1,0 +1,15 @@
+{
+    "characters": [
+        {
+            "id": 1,
+            "name": "Character Test",
+            "movement": {
+                "speed": 5,
+                "acceleration": 10
+            },
+            "render": {
+                "model": "models/characters/shriley.glb"
+            }
+        }
+    ]
+}
