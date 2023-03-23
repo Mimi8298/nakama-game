@@ -14,7 +14,7 @@ export default abstract class GameObject {
     constructor(config: Config, level: Level) {
         this._level = level;
         this._config = config;
-        this._id = 0;
+        this._id = -1;
         this._position = Vector2.Zero();
     }
 
@@ -53,7 +53,11 @@ export default abstract class GameObject {
         return 0;
     }
 
-    public getComponent<T extends Component>(type: ComponentType): T {
+    public getComponent<T extends Component>(s: new (parent: GameObject) => T): T {
+        const type = s.prototype.type;
+        if (!this._components.has(type)) {
+            throw new Error(`Component of type ${type} does not exist.`);
+        }
         return this._components.get(type) as T;
     }
 

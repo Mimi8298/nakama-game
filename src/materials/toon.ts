@@ -2,16 +2,16 @@ import { Scene } from "@babylonjs/core/scene"
 import { ShaderMaterial } from "@babylonjs/core/Materials/shaderMaterial"
 import { Effect } from "@babylonjs/core/Materials/effect"
 
-import * as sampleVertexShader from "./Shaders/Sample/sample.vertex.glsl"
-import * as sampleFragmentShader from "./Shaders/Sample/sample.fragment.glsl"
+import * as toonVertexShader from "./Shaders/Sample/toon.vertex.glsl"
+import * as toonFragmentShader from "./Shaders/Sample/toon.fragment.glsl"
 
-Effect.ShadersStore["sampleVertexShader"] = sampleVertexShader
-Effect.ShadersStore["sampleFragmentShader"] = sampleFragmentShader
+Effect.ShadersStore["toonVertexShader"] = toonVertexShader
+Effect.ShadersStore["toonFragmentShader"] = toonFragmentShader
 
-export class SampleMaterial extends ShaderMaterial {
+export class ToonMaterial extends ShaderMaterial {
 
     constructor(name: string, scene: Scene) {
-        super(name, scene, { vertex: "sample", fragment: "sample" }, {
+        super(name, scene, { vertex: "toon", fragment: "toon" }, {
             uniforms: [
                 "worldViewProjection",
                 "time"

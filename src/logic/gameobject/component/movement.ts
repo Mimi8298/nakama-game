@@ -12,7 +12,7 @@ class MovementComponent extends Component {
 
     public input = new MovementInput();
 
-    constructor(parent: Character, config: MovementConfig) {
+    constructor(parent: Character, config: MovementConfig = null) {
         super(parent);
         this._velocity = Vector2.Zero();
         this._config = config;

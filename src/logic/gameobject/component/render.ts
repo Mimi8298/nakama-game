@@ -23,7 +23,7 @@ export default class RenderComponent extends Component {
                 });
             });
             
-            const animationComponent = this.parent.getComponent<AnimationComponent>(ComponentType.Animation);
+            const animationComponent = this.parent.getComponent(AnimationComponent);
             if (animationComponent) {
                 animationComponent.setGroups(result.animationGroups);
             }
