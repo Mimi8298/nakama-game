@@ -1,18 +1,19 @@
 import { Vector2 } from "@babylonjs/core/Maths/math.vector";
 import MovementConfig from "../../config/component/movement";
 import Time from "../../time/time";
-import Character from "../character";
+import GameObject from "../gameObject";
 import Component, { ComponentType } from "./component";
 
 class MovementComponent extends Component {
     public onMove: (speedRate: number) => void = () => { };
 
-    private _velocity: Vector2;
-    private _config: MovementConfig;
+    protected _config: MovementConfig;
+    protected _velocity: Vector2;
+    private _dashing: boolean = false;
 
     public input = new MovementInput();
 
-    constructor(parent: Character, config: MovementConfig = null) {
+    constructor(parent: GameObject, config: MovementConfig = null) {
         super(parent);
         this._velocity = Vector2.Zero();
         this._config = config;
@@ -39,40 +40,54 @@ class MovementComponent extends Component {
             axis.normalize();
         }
 
-        let targetVelocity = axis.lengthSquared() !== 0 ? axis.scale(this._config.speed) : Vector2.Zero();
+        if (input.dash && !this._dashing) {
+            this._dashing = true;
+            input.dash = false;
 
-        this._velocity = Vector2.Lerp(this._velocity, targetVelocity, this._config.acceleration * Time.TICK_DELTA_TIME);
+            if (axis.lengthSquared() === 0) {
+                const direction = this._parent.direction - Math.PI / 2;
+                axis.x = Math.cos(direction);
+                axis.y = Math.sin(direction);
+                axis.normalize();
+            }
+            
+            this._velocity = axis.scale(this._config.dashSpeed);
+        } else {
+            if (this._dashing || axis.lengthSquared() === 0) {
+                this._velocity = Vector2.Lerp(this._velocity, Vector2.Zero(), (this._dashing ? this._config.dashDeceleration : this._config.deceleration) * Time.TICK_DELTA_TIME);
+                if (this._dashing) {
+                    this._dashing = this._velocity.lengthSquared() > this._config.speed * this._config.speed;
+                }
+            } else {
+                this._velocity = Vector2.Lerp(this._velocity, axis.scale(this._config.speed), this._config.acceleration * Time.TICK_DELTA_TIME);
+            }
+        }
 
         const velocityAtTime = this._velocity.clone().scale(Time.TICK_DELTA_TIME);
         const level = this._parent.level;
-        const newPosition = this._parent.position.add(velocityAtTime);
-        if (level.isPassableTile(newPosition)) {
-            this._parent.position = newPosition;
-        } else {
-            // found a passable tile in the direction of the velocity
-            const precision = velocityAtTime.length();
-            let passableTile = this.findPassableTile(this._parent.position, newPosition, precision);
-            if (passableTile === null) {
-                // TODO
+        let newPosition = this._parent.position.add(velocityAtTime);
+        if (!level.isPassableTile(newPosition)) {
+            const slidePosition = newPosition.clone();
+            slidePosition.x = this._parent.position.x;
+            if (level.isPassableTile(slidePosition)) {
+                newPosition = slidePosition;
+            } else {
+                slidePosition.x = newPosition.x;
+                slidePosition.y = this._parent.position.y;
+                if (level.isPassableTile(slidePosition)) {
+                    newPosition = slidePosition;
+                } else {
+                    newPosition = this._parent.position;
+                }
+
             }
         }
+
+        this._parent.position = newPosition;
 
         this.onMove(this._velocity.length() / this._config.speed);
     }
-
-    private findPassableTile(from: Vector2, to: Vector2, precision: number): Vector2 | null {
-        const direction = to.subtract(from).normalize();
-        const distance = to.subtract(from).length();
-        for (let i = 0; i < distance; i += precision) {
-            const tmp = from.add(direction.scale(i));
-            if (this._parent.level.isPassableTile(tmp)) {
-                return tmp;
-            }
-        }
-
-        return null;
-    }
-
+    
     public updateDirection() {
         let velocity = this._velocity;
         if (velocity.lengthSquared() > 1) {
@@ -80,16 +95,13 @@ class MovementComponent extends Component {
         }
 
         let direction = Math.atan2(velocity.y, velocity.x);
-        this.character.direction = direction + Math.PI / 2;
-    }
-
-    public get character(): Character {
-        return this._parent as Character;
+        this.parent.direction = direction + Math.PI / 2;
     }
 }
 
 class MovementInput {
     public axis: Vector2 = Vector2.Zero();
+    public dash: boolean = false;
 }
 
 export default MovementComponent;

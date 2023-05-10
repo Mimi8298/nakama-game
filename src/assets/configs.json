@@ -5,7 +5,26 @@
             "name": "Character Test",
             "movement": {
                 "speed": 5,
-                "acceleration": 10
+                "dashSpeed": 30,
+                "acceleration": 10,
+                "deceleration": 10,
+                "dashDeceleration": 6
+            },
+            "render": {
+                "model": "models/characters/shriley.glb"
+            }
+        }
+    ],
+    "monsters": [
+        {
+            "id": 1,
+            "name": "Monster Test",
+            "movement": {
+                "speed": 5,
+                "dashSpeed": 30,
+                "acceleration": 10,
+                "deceleration": 10,
+                "dashDeceleration": 6
             },
             "render": {
                 "model": "models/characters/shriley.glb"

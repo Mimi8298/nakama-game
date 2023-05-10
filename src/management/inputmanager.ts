@@ -14,8 +14,12 @@ export default class InputManager {
         });
     }
 
-    public static isKeyDown(key : string) : boolean {
-        return InputManager._keysDown[key] || false;
+    public static isKeyDown(key: string, mask: boolean = false) : boolean {
+        const result = InputManager._keysDown[key] || false;
+        if (result && mask) {
+            InputManager._keysDown[key] = false;
+        }
+        return result;
     }
 
     public static onKeyDown(key : string) : void {

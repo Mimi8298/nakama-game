@@ -23,6 +23,7 @@ enum ComponentType {
     Movement = 0,
     Render = 1,
     Animation = 2,
+    MonsterMovement = 3,
 }
 
 export default Component;

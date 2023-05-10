@@ -5,7 +5,7 @@ import TileMap, { TileState } from "./tilemap";
 export default class Level {
     private _gameObjectManager: GameObjectManager;
     private _tileMap: TileMap;
-
+    
     constructor(size: Vector2, resolution: number) {
         this._tileMap = new TileMap(size, resolution);
         this._gameObjectManager = new GameObjectManager(this);

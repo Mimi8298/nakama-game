@@ -13,6 +13,13 @@ export default class TerrainComponent implements ISceneComponent {
         this._root.bakeCurrentTransformIntoVertices(true);
         this._root.computeWorldMatrix(true);
 
+        const children = this._root.getChildMeshes();
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            child.computeWorldMatrix(true);
+            child.refreshBoundingInfo();
+        }
+
         this.computePassableTiles();
     }
 
@@ -22,17 +29,6 @@ export default class TerrainComponent implements ISceneComponent {
         const resolution = level.resolution;
 
         const children = this._root.getChildMeshes();
-        for (let i = 0; i < children.length; i++) {
-            const child = children[i];
-            if (this.isPassableMesh(child)) {
-                // ignore ground
-                continue;
-            }
-            child.showBoundingBox = false;
-            child.computeWorldMatrix(true);
-            child.refreshBoundingInfo();
-        }
-
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (this.isPassableMesh(child)) {
@@ -54,7 +50,7 @@ export default class TerrainComponent implements ISceneComponent {
 
             for (let x = minTile.x; x < maxTile.x; x++) {
                 for (let y = minTile.y; y < maxTile.y; y++) {
-                    if (!TerrainComponent.insideMesh(child, x, y)) {
+                    if (!TerrainComponent.insideMesh(child, x / resolution, y / resolution)) {
                         continue;
                     }
 
@@ -63,6 +59,8 @@ export default class TerrainComponent implements ISceneComponent {
                 }
             }
         }
+
+        level.tileMap.updatePathFinder();
 
         this.dump();
     }
@@ -144,11 +142,10 @@ export default class TerrainComponent implements ISceneComponent {
     }
 
     private static insideMesh(mesh: AbstractMesh, x: number, y: number): boolean {
-        const point = new Vector3(x, 4, y);
-
-        const ray = new Ray(point, Vector3.Down(), 6);
+        const point = new Vector3(x, -2, y);
+        const ray = new Ray(point, Vector3.Up(), 4);
         const hit = ray.intersectsMesh(mesh, false);
 
-        return hit !== null && hit.distance < 5;
+        return hit !== null && hit.hit;
     }
 }

@@ -10,7 +10,7 @@ export default class AnimationComponent extends Component {
     constructor(parent: GameObject) {
         super(parent);
 
-        const movementComponent = this.parent.getComponent(MovementComponent);
+        const movementComponent = this.parent.findComponent(MovementComponent);
         if (movementComponent) {
             movementComponent.onMove = (rate) => {
                 if (rate < 0.2) {

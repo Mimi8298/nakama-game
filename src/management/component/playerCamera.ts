@@ -1,6 +1,5 @@
-import { FlyCamera, Vector3 } from "@babylonjs/core";
+import { Camera, FlyCamera, Vector3 } from "@babylonjs/core";
 import GameObject from "../../logic/gameobject/gameObject";
-import Scene from "../../scenes/scene";
 import WorldScene from "../../scenes/world";
 import ISceneComponent from "./interface";
 
@@ -15,6 +14,16 @@ export default class PlayerCamera implements ISceneComponent {
     constructor(scene: WorldScene, target: GameObject, offset: Vector3, speed: number = 10) {
         this._scene = scene;
         this._camera = new FlyCamera("camera", Vector3.Zero(), scene);
+        this._camera.mode = Camera.ORTHOGRAPHIC_CAMERA;
+
+        const rect   = scene.getEngine().getRenderingCanvasClientRect();
+        const aspect = rect.height / rect.width; 
+        const radius = 20;
+        this._camera.orthoLeft   = -radius;
+        this._camera.orthoRight  =  radius;
+        this._camera.orthoBottom = -radius * aspect;
+        this._camera.orthoTop    =  radius * aspect;   
+
         this._target = target;
         this._offset = offset;
         this._speed = speed;
@@ -26,8 +35,14 @@ export default class PlayerCamera implements ISceneComponent {
             const currentPosition = this._camera.position;
             const targetPosition = target3D.add(this._offset);
             const newPosition = Vector3.Lerp(currentPosition, targetPosition, this._speed * t);
+
             this._camera.position = newPosition;
             this._camera.setTarget(target3D);
+
+            const rotation = this._camera.rotation;
+            rotation.y = 0;
+            rotation.z = 0;
+            this._camera.rotation = rotation;
         }
     }
 

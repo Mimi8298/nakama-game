@@ -10,10 +10,10 @@ import TerrainComponent from "../management/component/terrain";
 import Scene from "./scene";
 
 export default class WorldScene extends Scene {
-    private static readonly CAMERA_SPEED: number = 10;
-    private static readonly CAMERA_OFFSET: Vector3 = new Vector3(0, 21, -20);
+    private static readonly CAMERA_SPEED: number = 15;
+    private static readonly CAMERA_OFFSET: Vector3 = new Vector3(0, 1500, -2000);
 
-    private static readonly WORLD_PRECISION: number = 2;
+    private static readonly WORLD_PRECISION: number = 4;
     private static readonly WORLD_SIZE: Vector2 = new Vector2(100, 100);
     private static readonly WORLD_CENTER_3D: Vector3 = new Vector3(WorldScene.WORLD_SIZE.x / 2, 0, WorldScene.WORLD_SIZE.y / 2);
 
@@ -43,6 +43,13 @@ export default class WorldScene extends Scene {
                     id: 1,
                     position: WorldScene.WORLD_SIZE.scale(0.5),
                     direction: 0
+                },
+                {
+                    type: GameObjectType.Monster,
+                    config: 1,
+                    id: 2,
+                    position: WorldScene.WORLD_SIZE.scale(0.6),
+                    direction: 0
                 }
             ]
         });
@@ -52,11 +59,11 @@ export default class WorldScene extends Scene {
         this.addComponent(new PlayerInput(character));
         this.addComponent(new PlayerCamera(this, character, WorldScene.CAMERA_OFFSET, WorldScene.CAMERA_SPEED));
 
-        new HemisphericLight("light", new Vector3(0, 1, 0), this);
+        new HemisphericLight("light", new Vector3(0, 1, 0), this).intensity = 1.4;
 
         await this.createTerrain();
 
-        this.debugLayer.show();
+        // this.debugLayer.show();
     }
 
     private async createTerrain() : Promise<void> {

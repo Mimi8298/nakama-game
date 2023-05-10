@@ -29,8 +29,10 @@ export default class PlayerInput implements ISceneComponent {
             const axisX = this.getKeyAxis(PlayerInput.KEY_RIGHT) - this.getKeyAxis(PlayerInput.KEY_LEFT);
             const axisY = this.getKeyAxis(PlayerInput.KEY_FORWARD) - this.getKeyAxis(PlayerInput.KEY_BACKWARD);
 
-            movementComponent.input.axis.x = axisX;
-            movementComponent.input.axis.y = axisY;
+            const input = movementComponent.input;
+            input.axis.x = axisX;
+            input.axis.y = axisY;
+            input.dash = input.dash || InputManager.isKeyDown("Shift", true);
         }
     }
 

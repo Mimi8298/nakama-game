@@ -2,6 +2,7 @@ import ConfigTable from "../config/table";
 import Level from "../level/level";
 import Character from "./character";
 import GameObject, { GameObjectType } from "./gameObject";
+import Monster from "./monster";
 
 export default class GameObjectManager {
     // declare 2 events: onNewObject and onRemoveObject
@@ -92,6 +93,9 @@ export default class GameObjectManager {
         switch (type) {
             case GameObjectType.Character:
                 return new Character(ConfigTable.getCharacter(configId), this._level);
+            case GameObjectType.Monster:
+                return new Monster(ConfigTable.getMonster(configId), this._level);
+
             default:
                 throw new Error(`Unknown game object type: ${type}`);
         }

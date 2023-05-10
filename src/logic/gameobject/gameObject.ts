@@ -53,10 +53,22 @@ export default abstract class GameObject {
         return 0;
     }
 
+    public set direction(direction: number) {
+        // do nothing
+    }
+
     public getComponent<T extends Component>(s: new (parent: GameObject) => T): T {
         const type = s.prototype.type;
         if (!this._components.has(type)) {
             throw new Error(`Component of type ${type} does not exist.`);
+        }
+        return this._components.get(type) as T;
+    }
+
+    public findComponent<T extends Component>(s: new (parent: GameObject) => T): T {
+        const type = s.prototype.type;
+        if (!this._components.has(type)) {
+            return null;
         }
         return this._components.get(type) as T;
     }
@@ -94,4 +106,5 @@ export default abstract class GameObject {
 
 export enum GameObjectType {
     Character = 0,
+    Monster = 1,
 }
